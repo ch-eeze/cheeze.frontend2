@@ -25,26 +25,38 @@ const addItem = () => {
 interface Task {
     name: string
     deadline: string
-    status: string
+    status: boolean
 }
 
 const tasks = ref<Task[]>([
-    { name: '数学のレポート', deadline: '20日', status: 'undone'}
+    { name: '数学のレポート', deadline: '20日', status: false}
 ])
 const newTaskName = ref('')
 const newTaskDeadline = ref('')
 
 const addTask = () => {
     if (newTaskName.value !='') {
-        tasks.value.push({ name: newTaskName.value, deadline: newTaskDeadline.value, status: 'undone'})
+        tasks.value.push({ name: newTaskName.value, deadline: newTaskDeadline.value, status: false})
     }
   newTaskName.value = ''
   newTaskDeadline.value = ''
 }
 
-const undoneTasks = computed(() => tasks.value.filter(task => task.status === 'undone'))
-const doneTasks = computed(() => tasks.value.filter(task => task.status === 'done'))
+const undoneTasks = computed(() => tasks.value.filter(task => task.status === false))
+const doneTasks = computed(() => tasks.value.filter(task => task.status === true))
 
+
+const finishTask = (taskName: string) => {
+  // タスク名がtaskNameのタスクを完了済みにする
+  tasks.value = tasks.value.map((task) => {
+    if (task.name === taskName) {
+      return {
+        ...task,
+        status: true
+      }
+    }
+    return task
+  })}
 </script>
 
 <template>
@@ -72,7 +84,7 @@ const doneTasks = computed(() => tasks.value.filter(task => task.status === 'don
       <div>Undone</div>
         <ul>
             <li v-for="task in undoneTasks" :key="task.name">
-                <div><input type="checkbox" id="prgress">タスク名: {{ task.name }}</div>
+                <div><button @click="finishTask(task.name)"></button>タスク名: {{ task.name }}</div>
                 <div>締切: {{ task.deadline }}まで</div>
             </li>
         </ul>
